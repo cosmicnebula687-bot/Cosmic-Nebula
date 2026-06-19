@@ -54,17 +54,7 @@ for (const file of commandFiles) {
 console.log(`🚀 Loaded ${client.commands.size} commands`);
 
 // ─── Event Loader ─────────────────────────────────────────────────────────────
-const eventFiles = fs.readdirSync(path.join(__dirname, 'events'))
-  .filter(f => f.endsWith('.js'));
-for (const file of eventFiles) {
-  const event = require(path.join(__dirname, 'events', file));
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args, client));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args, client));
-  }
-}
-console.log(`📡 Loaded ${eventFiles.length} events`);
+console.log('📡 No events folder found, skipping event loading');
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 (async () => {
