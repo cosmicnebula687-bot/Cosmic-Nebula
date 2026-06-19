@@ -29,15 +29,26 @@ client.commands = new Collection();
 client.cooldowns = new Collection();
 
 // ─── Command Loader ───────────────────────────────────────────────────────────
-const commandFolders = fs.readdirSync(path.join(__dirname, 'commands'));
-for (const folder of commandFolders) {
-  const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder))
-    .filter(f => f.endsWith('.js'));
-  for (const file of commandFiles) {
-    const command = require(path.join(__dirname, 'commands', folder, file));
+const commandFiles = fs.readdirSync(__dirname)
+  .filter(file =>
+    file.endsWith('.js') &&
+    ![
+      'index.js',
+      'database.js',
+      'config.js',
+      'deploy-commands.js'
+    ].includes(file)
+  );
+
+for (const file of commandFiles) {
+  try {
+    const command = require(path.join(__dirname, file));
+
     if (command.data && command.execute) {
       client.commands.set(command.data.name, command);
     }
+  } catch (err) {
+    console.log(`Failed to load ${file}:`, err.message);
   }
 }
 console.log(`🚀 Loaded ${client.commands.size} commands`);
