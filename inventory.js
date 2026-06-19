@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const { getUser } = require('./database');
 const { rarityEmoji } = require('./embed');
-const config = require('../../config/config');
+const config = require('./config');
 
 module.exports = {
   data: new SlashCommandBuilder()
