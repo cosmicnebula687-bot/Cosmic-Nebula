@@ -4,32 +4,46 @@ const fs = require('fs');
 const path = require('path');
 
 const commands = [];
-const commandFolders = fs.readdirSync(path.join(__dirname, 'commands'));
 
-for (const folder of commandFolders) {
-  const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder))
-    .filter(f => f.endsWith('.js'));
-  for (const file of commandFiles) {
-    const command = require(path.join(__dirname, 'commands', folder, file));
+const commandFiles = fs.readdirSync(__dirname)
+  .filter(file =>
+    file.endsWith('.js') &&
+    ![
+      'index.js',
+      'database.js',
+      'config.js',
+      'deploy-commands.js'
+    ].includes(file)
+  );
+
+for (const file of commandFiles) {
+  try {
+    const command = require(path.join(__dirname, file));
+
     if (command.data) {
       commands.push(command.data.toJSON());
     }
+  } catch (err) {
+    console.log(`Failed to load ${file}:`, err.message);
   }
 }
 
-const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
   try {
     console.log(`🚀 Deploying ${commands.length} slash commands...`);
 
-    const route = process.env.GUILD_ID
-      ? Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID)
-      : Routes.applicationCommands(process.env.CLIENT_ID);
+    const data = await rest.put(
+      Routes.applicationGuildCommands(
+        process.env.CLIENT_ID,
+        process.env.GUILD_ID
+      ),
+      { body: commands }
+    );
 
-    const data = await rest.put(route, { body: commands });
     console.log(`✅ Successfully deployed ${data.length} commands!`);
-    console.log('Commands:', data.map(c => `/${c.name}`).join(', '));
+    console.log(data.map(cmd => `/${cmd.name}`).join(', '));
   } catch (error) {
     console.error('❌ Deploy error:', error);
   }
