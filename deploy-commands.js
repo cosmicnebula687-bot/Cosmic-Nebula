@@ -35,9 +35,6 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
     console.log(`🚀 Deploying ${commands.length} slash commands...`);
 
     const data = await rest.put(
-      console.log("CLIENT_ID:", process.env.CLIENT_ID);
-console.log("GUILD_ID:", process.env.GUILD_ID);
-console.log("Commands found:", commands.length);
       Routes.applicationGuildCommands(
         process.env.CLIENT_ID,
         process.env.GUILD_ID
