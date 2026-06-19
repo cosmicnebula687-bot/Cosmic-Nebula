@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
-const { formatTime } = require('../../utils/embed');
+const { formatTime } = require('./embed');
 const config = require('./config');
 
 module.exports = {
